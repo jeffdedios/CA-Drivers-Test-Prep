@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Question } from "@shared/schema";
+import { Question, UserProgress } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 import { getQuestionOrder } from "@/lib/questions";
 
@@ -32,7 +32,7 @@ export function useStudySession() {
 
   // Fetch questions based on current category
   const { data: allQuestions = [], isLoading } = useQuery<Question[]>({
-    queryKey: ["/api/questions", sessionState.category],
+    queryKey: [`/api/questions?category=${sessionState.category}`],
     enabled: true,
   });
 
@@ -41,19 +41,28 @@ export function useStudySession() {
   const currentQuestion = questions[sessionState.currentQuestionIndex];
 
   // Fetch user progress
-  const { data: userProgress = [] } = useQuery({
+  const { data: userProgress = [] } = useQuery<UserProgress[]>({
     queryKey: ["/api/progress", USER_ID],
   });
 
   // Fetch user stats
-  const { data: userStats } = useQuery({
+  const { data: userStats } = useQuery<{
+    totalAnswered: number;
+    totalCorrect: number;
+    categoryStats: Array<{
+      category: string;
+      answered: number;
+      correct: number;
+      accuracy: number;
+    }>;
+  }>({
     queryKey: ["/api/stats", USER_ID],
   });
 
   // Update progress mutation
   const updateProgressMutation = useMutation({
     mutationFn: async (data: { questionId: string; isCorrect: boolean; timeDelta?: number }) => {
-      const existingProgress = userProgress.find((p: any) => p.questionId === data.questionId);
+      const existingProgress = userProgress.find((p) => p.questionId === data.questionId);
       const timesAnswered = (existingProgress?.timesAnswered || 0) + 1;
       const timesCorrect = (existingProgress?.timesCorrect || 0) + (data.isCorrect ? 1 : 0);
       
@@ -153,7 +162,7 @@ export function useStudySession() {
   const toggleBookmark = () => {
     if (!currentQuestion) return;
     
-    const existingProgress = userProgress.find((p: any) => p.questionId === currentQuestion.id);
+    const existingProgress = userProgress.find((p) => p.questionId === currentQuestion.id);
     const isCurrentlyBookmarked = existingProgress?.isBookmarked || false;
     
     toggleBookmarkMutation.mutate({
@@ -173,7 +182,7 @@ export function useStudySession() {
   // Check if current question is bookmarked
   const isCurrentQuestionBookmarked = () => {
     if (!currentQuestion) return false;
-    const progress = userProgress.find((p: any) => p.questionId === currentQuestion.id);
+    const progress = userProgress.find((p) => p.questionId === currentQuestion.id);
     return progress?.isBookmarked || false;
   };
 

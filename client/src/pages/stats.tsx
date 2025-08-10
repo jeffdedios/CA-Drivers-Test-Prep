@@ -7,9 +7,20 @@ import { getCategoryName } from "@/lib/questions";
 
 const USER_ID = "demo-user";
 
+type UserStats = {
+  totalAnswered: number;
+  totalCorrect: number;
+  categoryStats: Array<{
+    category: string;
+    answered: number;
+    correct: number;
+    accuracy: number;
+  }>;
+};
+
 export default function StatsPage() {
-  const { data: stats, isLoading } = useQuery({
-    queryKey: ["/api/stats", USER_ID],
+  const { data: stats, isLoading } = useQuery<UserStats>({
+    queryKey: [`/api/stats/${USER_ID}`],
   });
 
   if (isLoading) {
@@ -25,11 +36,11 @@ export default function StatsPage() {
     );
   }
 
-  const overallAccuracy = stats?.totalAnswered > 0 
+  const overallAccuracy = stats && stats.totalAnswered > 0 
     ? Math.round((stats.totalCorrect / stats.totalAnswered) * 100)
     : 0;
 
-  const progressPercentage = stats?.totalAnswered > 0 
+  const progressPercentage = stats && stats.totalAnswered > 0 
     ? Math.min((stats.totalAnswered / 50) * 100, 100) // Assuming 50 total questions
     : 0;
 
@@ -95,7 +106,7 @@ export default function StatsPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             {stats?.categoryStats?.length > 0 ? (
-              stats.categoryStats.map((category: any) => (
+              stats.categoryStats.map((category) => (
                 <div key={category.category} className="space-y-2">
                   <div className="flex justify-between items-center">
                     <span className="text-sm font-medium text-gray-700">

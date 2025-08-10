@@ -218,7 +218,12 @@ export class MemStorage implements IStorage {
 
   async createQuestion(insertQuestion: InsertQuestion): Promise<Question> {
     const id = randomUUID();
-    const question: Question = { ...insertQuestion, id };
+    const question: Question = { 
+      ...insertQuestion, 
+      id,
+      section: insertQuestion.section || "",
+      difficulty: insertQuestion.difficulty || "medium"
+    };
     this.questions.set(id, question);
     return question;
   }
@@ -272,6 +277,9 @@ export class MemStorage implements IStorage {
     const session: StudySession = { 
       ...insertSession, 
       id,
+      category: insertSession.category || "all",
+      questionsAnswered: insertSession.questionsAnswered || 0,
+      correctAnswers: insertSession.correctAnswers || 0,
       startedAt: new Date(),
       completedAt: null
     };
@@ -312,8 +320,8 @@ export class MemStorage implements IStorage {
       if (!question) continue;
       
       const current = categoryMap.get(question.category) || { answered: 0, correct: 0 };
-      current.answered += progress.timesAnswered;
-      current.correct += progress.timesCorrect;
+      current.answered += progress.timesAnswered || 0;
+      current.correct += progress.timesCorrect || 0;
       categoryMap.set(question.category, current);
     }
     

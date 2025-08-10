@@ -6,11 +6,13 @@ import { Bookmark, Car } from "lucide-react";
 import { getCategoryName } from "@/lib/questions";
 import { Link } from "wouter";
 
+import { Question } from "@shared/schema";
+
 const USER_ID = "demo-user";
 
 export default function BookmarksPage() {
-  const { data: bookmarkedQuestions = [], isLoading } = useQuery({
-    queryKey: ["/api/bookmarks", USER_ID],
+  const { data: bookmarkedQuestions = [], isLoading } = useQuery<Question[]>({
+    queryKey: [`/api/bookmarks/${USER_ID}`],
   });
 
   if (isLoading) {
@@ -44,7 +46,7 @@ export default function BookmarksPage() {
       <div className="p-4 space-y-4 pb-20">
         {bookmarkedQuestions.length > 0 ? (
           <div className="space-y-3">
-            {bookmarkedQuestions.map((question: any, index: number) => (
+            {bookmarkedQuestions.map((question, index: number) => (
               <Card key={question.id} className="hover:shadow-md transition-shadow">
                 <CardContent className="p-4">
                   <div className="flex justify-between items-start mb-2">
