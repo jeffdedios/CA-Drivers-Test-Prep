@@ -2,6 +2,13 @@
 
 This is a California Driver's License Test Prep mobile web application built with React and TypeScript. The app provides interactive flashcard-style studying for California DMV handbook questions, featuring multiple study modes (sequential, random, review), category filtering, progress tracking, and bookmarking functionality. The application is designed with a mobile-first approach and includes a comprehensive question database with explanations.
 
+## Recent Changes (January 2024)
+
+✓ **Deployment Configuration Fixed**: Added error handling for DATABASE_URL requirement during deployment
+✓ **In-Memory Storage**: Application uses MemStorage - no database required at runtime  
+✓ **Graceful Database Error Handling**: Server continues operation when database unavailable
+✓ **Deployment Guide**: Created DEPLOYMENT.md with environment variable configuration
+
 # User Preferences
 
 Preferred communication style: Simple, everyday language.

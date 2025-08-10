@@ -828,8 +828,8 @@ export class MemStorage implements IStorage {
     const question: Question = { 
       ...insertQuestion, 
       id,
-      section: insertQuestion.section || "",
-      difficulty: insertQuestion.difficulty || "medium"
+      section: insertQuestion.section || null,
+      difficulty: insertQuestion.difficulty || null
     };
     this.questions.set(id, question);
     return question;
